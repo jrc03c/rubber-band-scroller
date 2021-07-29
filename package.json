@@ -1,15 +1,23 @@
 {
-  "name": "springs",
+  "name": "rubber-band-scroller",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
+  "description": "```js const RubberBandScroller = require(\"rubber-band-scroller\")",
+  "main": "index.js",
+  "dependencies": {
+    "vector2": "github:jrc03c/vector2.js"
+  },
   "scripts": {
     "build": "watchify -e src/index.js -o dist/rubber-band-scroller.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrc03c/rubber-band-scroller.js.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "vector2": "github:jrc03c/vector2.js"
-  }
+  "bugs": {
+    "url": "https://github.com/jrc03c/rubber-band-scroller.js/issues"
+  },
+  "homepage": "https://github.com/jrc03c/rubber-band-scroller.js#readme"
 }
