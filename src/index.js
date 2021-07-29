@@ -73,7 +73,6 @@ class RubberBandScroller {
     }
 
     loop()
-
     return self
   }
 
