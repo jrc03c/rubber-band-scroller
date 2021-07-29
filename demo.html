@@ -2,6 +2,10 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"
+    />
     <title></title>
     <style>
       body {
@@ -202,9 +206,38 @@
 
     <script src="dist/rubber-band-scroller.js"></script>
     <script>
-      const focus = document.getElementById("scroll-focus")
-      const band = new RubberBandScroller(focus)
-      band.start()
+      let band
+
+      function resize() {
+        if (band) {
+          band.stop()
+        }
+
+        setTimeout(() => {
+          const focus = document.getElementById("scroll-focus")
+          const rect = focus.getBoundingClientRect()
+
+          band = new RubberBandScroller({
+            target: {
+              x:
+                rect.left +
+                rect.width / 2 -
+                window.innerWidth / 2 +
+                window.pageXOffset,
+              y:
+                rect.top +
+                rect.height / 2 -
+                window.innerHeight / 2 +
+                window.pageYOffset,
+            },
+          })
+
+          band.start()
+        }, 10)
+      }
+
+      window.addEventListener("resize", resize)
+      resize()
     </script>
   </body>
 </html>

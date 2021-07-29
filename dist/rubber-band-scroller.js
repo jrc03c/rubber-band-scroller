@@ -103,11 +103,12 @@ const Vector2 = require("vector2")
 class RubberBandScroller {
   target = new Vector2(0, 0)
   k = 3
-  mass = 10
+  mass = 15
   damping = 0.6
   maxDisplacement = new Vector2(50, 50)
   velocity = new Vector2(0, 0)
   isRunning = false
+  isPaused = false
 
   constructor(options) {
     const self = this
@@ -137,22 +138,39 @@ class RubberBandScroller {
     const self = this
     self.isRunning = true
 
+    const boundOnMouseDown = self.onMouseDown.bind(self)
+    const boundOnMouseUp = self.onMouseUp.bind(self)
+    const boundOnTouchStart = self.onTouchStart.bind(self)
+    const boundOnTouchEnd = self.onTouchEnd.bind(self)
+
+    window.addEventListener("mousedown", boundOnMouseDown)
+    window.addEventListener("mouseup", boundOnMouseUp)
+    window.addEventListener("touchstart", boundOnTouchStart)
+    window.addEventListener("touchend", boundOnTouchEnd)
+
     function loop() {
       if (self.isRunning) {
         window.requestAnimationFrame(loop)
-
-        const current = new Vector2(window.pageXOffset, window.pageYOffset)
-        const displacement = Vector2.subtract(current, self.target)
-        const force = Vector2.scale(displacement, -self.k)
-        const acceleration = Vector2.scale(force, 1 / self.mass)
-        self.velocity.add(acceleration).scale(self.damping)
-        const newPosition = Vector2.add(current, self.velocity)
-
-        window.scrollTo({
-          left: newPosition.x,
-          top: newPosition.y,
-        })
+      } else {
+        window.removeEventListener("mousedown", boundOnMouseDown)
+        window.removeEventListener("mouseup", boundOnMouseUp)
+        window.removeEventListener("touchstart", boundOnTouchStart)
+        window.removeEventListener("touchend", boundOnTouchEnd)
       }
+
+      if (self.isPaused) return
+
+      const current = new Vector2(window.pageXOffset, window.pageYOffset)
+      const displacement = Vector2.subtract(current, self.target)
+      const force = Vector2.scale(displacement, -self.k)
+      const acceleration = Vector2.scale(force, 1 / self.mass)
+      self.velocity.add(acceleration).scale(self.damping)
+      const newPosition = Vector2.add(current, self.velocity)
+
+      window.scrollTo({
+        left: newPosition.x,
+        top: newPosition.y,
+      })
     }
 
     loop()
@@ -163,6 +181,30 @@ class RubberBandScroller {
   stop() {
     const self = this
     self.isRunning = false
+    return self
+  }
+
+  onMouseDown(event) {
+    const self = this
+    if (event.button === 0) self.isPaused = true
+    return self
+  }
+
+  onMouseUp(event) {
+    const self = this
+    if (event.button === 0) self.isPaused = false
+    return self
+  }
+
+  onTouchStart(event) {
+    const self = this
+    self.isPaused = true
+    return self
+  }
+
+  onTouchEnd(event) {
+    const self = this
+    if (event.touches.length === 0) self.isPaused = false
     return self
   }
 }
