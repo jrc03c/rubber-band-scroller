@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <script>
+      const width = 512
+      const height = 512
+      const canvas = document.createElement("canvas")
+      canvas.width = width
+      canvas.height = height
+      document.body.appendChild(canvas)
+
+      const context = canvas.getContext("2d")
+      const ball = {
+        radius: 64,
+        x: width / 2,
+        y: height / 2,
+        vx: 0,
+        vy: 0,
+      }
+
+      function loop() {
+        window.requestAnimationFrame(loop)
+
+        context.fillStyle = "rgb(200, 200, 200)"
+        context.fillRect(0, 0, width, height)
+
+        context.fillStyle = "black"
+        context.beginPath()
+        context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, false)
+        context.fill()
+      }
+
+      loop()
+    </script>
+  </body>
+</html>
