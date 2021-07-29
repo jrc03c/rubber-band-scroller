@@ -151,26 +151,25 @@ class RubberBandScroller {
     function loop() {
       if (self.isRunning) {
         window.requestAnimationFrame(loop)
+        if (self.isPaused) return
+
+        const current = new Vector2(window.pageXOffset, window.pageYOffset)
+        const displacement = Vector2.subtract(current, self.target)
+        const force = Vector2.scale(displacement, -self.k)
+        const acceleration = Vector2.scale(force, 1 / self.mass)
+        self.velocity.add(acceleration).scale(self.damping)
+        const newPosition = Vector2.add(current, self.velocity)
+
+        window.scrollTo({
+          left: newPosition.x,
+          top: newPosition.y,
+        })
       } else {
         window.removeEventListener("mousedown", boundOnMouseDown)
         window.removeEventListener("mouseup", boundOnMouseUp)
         window.removeEventListener("touchstart", boundOnTouchStart)
         window.removeEventListener("touchend", boundOnTouchEnd)
       }
-
-      if (self.isPaused) return
-
-      const current = new Vector2(window.pageXOffset, window.pageYOffset)
-      const displacement = Vector2.subtract(current, self.target)
-      const force = Vector2.scale(displacement, -self.k)
-      const acceleration = Vector2.scale(force, 1 / self.mass)
-      self.velocity.add(acceleration).scale(self.damping)
-      const newPosition = Vector2.add(current, self.velocity)
-
-      window.scrollTo({
-        left: newPosition.x,
-        top: newPosition.y,
-      })
     }
 
     loop()
