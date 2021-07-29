@@ -59,8 +59,22 @@
         context.fill()
 
         if (mouse.buttonIsPressed) {
-          ball.x = mouse.x
-          ball.y = mouse.y
+          const mouseDisplacement = {
+            x: mouse.x - width / 2,
+            y: mouse.y - height / 2,
+          }
+
+          const m =
+            Math.sqrt(
+              Math.pow(mouseDisplacement.x, 2) +
+                Math.pow(mouseDisplacement.y, 2)
+            ) /
+            (width / 2)
+
+          const s = -1 / (m + 1) + 1
+          const maxDisplacement = 0.25
+          ball.x = width / 2 + (s * maxDisplacement * mouseDisplacement.x) / m
+          ball.y = height / 2 + (s * maxDisplacement * mouseDisplacement.y) / m
         } else {
           const displacement = {
             x: ball.x - width / 2,
