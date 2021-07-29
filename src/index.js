@@ -1,4 +1,5 @@
 const Vector2 = require("vector2")
+const lodash = require("lodash")
 
 class RubberBandScroller {
   target = new Vector2(0, 0)
@@ -36,11 +37,19 @@ class RubberBandScroller {
     const boundOnMouseUp = self.onMouseUp.bind(self)
     const boundOnTouchStart = self.onTouchStart.bind(self)
     const boundOnTouchEnd = self.onTouchEnd.bind(self)
+    const onWheelStart = () => (self.isPaused = true)
+    const onWheelEnd = lodash.debounce(() => (self.isPaused = false), 500)
+
+    const onWheel = () => {
+      onWheelStart()
+      onWheelEnd()
+    }
 
     window.addEventListener("mousedown", boundOnMouseDown)
     window.addEventListener("mouseup", boundOnMouseUp)
     window.addEventListener("touchstart", boundOnTouchStart)
     window.addEventListener("touchend", boundOnTouchEnd)
+    window.addEventListener("wheel", onWheel)
 
     function loop() {
       if (self.isRunning) {
@@ -63,6 +72,7 @@ class RubberBandScroller {
         window.removeEventListener("mouseup", boundOnMouseUp)
         window.removeEventListener("touchstart", boundOnTouchStart)
         window.removeEventListener("touchend", boundOnTouchEnd)
+        window.removeEventListener("wheel", onWheel)
       }
     }
 
