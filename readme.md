@@ -6,7 +6,6 @@ const band = new RubberBandScroller({
   k: 1,
   mass: 1,
   damping: 0.6,
-  maxDisplacement: { x: 100, y: 100 },
 })
 
 band.start()

@@ -105,7 +105,6 @@ class RubberBandScroller {
   k = 3
   mass = 15
   damping = 0.6
-  maxDisplacement = new Vector2(50, 50)
   velocity = new Vector2(0, 0)
   isRunning = false
   isPaused = false
@@ -126,11 +125,6 @@ class RubberBandScroller {
       if (options.k) self.k = options.k
       if (options.mass) self.mass = options.mass
       if (options.damping) self.damping = options.damping
-
-      if (options.maxDisplacement) {
-        self.maxDisplacement.x = options.maxDisplacement.x
-        self.maxDisplacement.y = options.maxDisplacement.y
-      }
     }
   }
 
