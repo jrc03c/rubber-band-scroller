@@ -100,16 +100,13 @@ if (typeof window !== "undefined") {
 },{}],2:[function(require,module,exports){
 const Vector2 = require("vector2")
 
-function lerp(a, b, f) {
-  return f * (b - a) + a
-}
-
 class RubberBandScroller {
   target = new Vector2(0, 0)
   k = 3
   mass = 10
   damping = 0.6
   maxDisplacement = new Vector2(50, 50)
+  velocity = new Vector2(0, 0)
   isRunning = false
 
   constructor(options) {
@@ -144,9 +141,16 @@ class RubberBandScroller {
       if (self.isRunning) {
         window.requestAnimationFrame(loop)
 
+        const current = new Vector2(window.pageXOffset, window.pageYOffset)
+        const displacement = Vector2.subtract(current, self.target)
+        const force = Vector2.scale(displacement, -self.k)
+        const acceleration = Vector2.scale(force, 1 / self.mass)
+        self.velocity.add(acceleration).scale(self.damping)
+        const newPosition = Vector2.add(current, self.velocity)
+
         window.scrollTo({
-          left: lerp(window.pageXOffset, self.target.x, 0.1),
-          top: lerp(window.pageYOffset, self.target.y, 0.1),
+          left: newPosition.x,
+          top: newPosition.y,
         })
       }
     }
