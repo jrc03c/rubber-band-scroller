@@ -3,23 +3,42 @@
   <head>
     <meta charset="utf-8" />
     <title></title>
+    <style>
+      html,
+      body,
+      canvas {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <script>
-      const width = 512
-      const height = 512
+      const width = window.innerWidth
+      const height = window.innerHeight
       const canvas = document.createElement("canvas")
       canvas.width = width
       canvas.height = height
       document.body.appendChild(canvas)
 
       const context = canvas.getContext("2d")
+      const k = 3
+      const damping = 0.6
+
       const ball = {
         radius: 64,
         x: width / 2,
         y: height / 2,
         vx: 0,
         vy: 0,
+        mass: 10,
+      }
+
+      const mouse = {
+        x: 0,
+        y: 0,
+        buttonIsPressed: false,
       }
 
       function loop() {
@@ -28,13 +47,59 @@
         context.fillStyle = "rgb(200, 200, 200)"
         context.fillRect(0, 0, width, height)
 
+        ball.vx *= damping
+        ball.vy *= damping
+
+        ball.x += ball.vx
+        ball.y += ball.vy
+
         context.fillStyle = "black"
         context.beginPath()
         context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, false)
         context.fill()
+
+        if (mouse.buttonIsPressed) {
+          ball.x = mouse.x
+          ball.y = mouse.y
+        } else {
+          const displacement = {
+            x: ball.x - width / 2,
+            y: ball.y - height / 2,
+          }
+
+          const f = {
+            x: -k * displacement.x,
+            y: -k * displacement.y,
+          }
+
+          const a = {
+            x: f.x / ball.mass,
+            y: f.y / ball.mass,
+          }
+
+          ball.vx += a.x
+          ball.vy += a.y
+        }
       }
 
       loop()
+
+      canvas.addEventListener("mousedown", event => {
+        if (event.button === 0) {
+          mouse.buttonIsPressed = true
+        }
+      })
+
+      canvas.addEventListener("mousemove", event => {
+        mouse.x = event.offsetX
+        mouse.y = event.offsetY
+      })
+
+      window.addEventListener("mouseup", event => {
+        if (event.button === 0) {
+          mouse.buttonIsPressed = false
+        }
+      })
     </script>
   </body>
 </html>
