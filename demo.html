@@ -208,7 +208,7 @@
     <script>
       let band
 
-      function resize() {
+      function run() {
         if (band) {
           band.stop()
         }
@@ -236,8 +236,8 @@
         }, 10)
       }
 
-      window.addEventListener("resize", resize)
-      resize()
+      window.addEventListener("resize", run)
+      run()
     </script>
   </body>
 </html>
