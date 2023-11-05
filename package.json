@@ -1,31 +1,21 @@
 {
-  "name": "rubber-band-scroller",
-  "version": "1.0.0",
-  "description": "```js const RubberBandScroller = require(\"rubber-band-scroller\")",
-  "main": "index.js",
+  "name": "@jrc03c/rubber-band-scroller",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "author": "jrc03c",
+  "homepage": "https://github.com/jrc03c/rubber-band-scroller",
   "dependencies": {
     "@jrc03c/vector2": "^0.0.2",
     "lodash": "^4.17.21"
   },
-  "scripts": {
-    "build": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify",
-    "watch": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify --watch"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jrc03c/rubber-band-scroller.js.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jrc03c/rubber-band-scroller.js/issues"
-  },
-  "homepage": "https://github.com/jrc03c/rubber-band-scroller.js#readme",
   "devDependencies": {
     "esbuild": "^0.19.5",
     "eslint": "^8.53.0",
     "eslint-plugin-html": "^7.1.0",
     "prettier": "^3.0.3"
+  },
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify",
+    "watch": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify --watch"
   }
 }
