@@ -1,18 +1,21 @@
-const Vector2 = require("vector2")
 const lodash = require("lodash")
+const Vector2 = require("@jrc03c/vector2")
 
 class RubberBandScroller {
-  target = new Vector2(0, 0)
+  damping = 0.6
+  delay = 0
+  isPaused = false
+  isRunning = false
   k = 3
   mass = 15
-  damping = 0.6
+  onScrollStartListeners = []
+  onScrollStopListeners = []
+  onScrollVelocityIsZeroListeners = []
+  sensitivity = 0.001
+  target = new Vector2(0, 0)
   velocity = new Vector2(0, 0)
-  isRunning = false
-  isPaused = false
 
   constructor(options) {
-    const self = this
-
     if (options && options instanceof HTMLElement) {
       const rect = options.getBoundingClientRect()
 
@@ -22,23 +25,75 @@ class RubberBandScroller {
     }
 
     if (options) {
-      if (options.target) self.target = options.target
-      if (options.k) self.k = options.k
-      if (options.mass) self.mass = options.mass
-      if (options.damping) self.damping = options.damping
+      this.damping = options.damping || this.damping
+      this.delay = options.delay || this.delay
+      this.k = options.k || this.k
+      this.mass = options.mass || this.mass
+      this.sensitivity = options.sensitivity || this.sensitivity
+      this.target = options.target || this.target
     }
   }
 
-  start() {
-    const self = this
-    self.isRunning = true
+  on(event, callback) {
+    if (typeof callback !== "function") {
+      throw new Error(
+        "The second argument passed into the `on` method must be a callback function!",
+      )
+    }
 
-    const boundOnMouseDown = self.onMouseDown.bind(self)
-    const boundOnMouseUp = self.onMouseUp.bind(self)
-    const boundOnTouchStart = self.onTouchStart.bind(self)
-    const boundOnTouchEnd = self.onTouchEnd.bind(self)
-    const onWheelStart = () => (self.isPaused = true)
-    const onWheelEnd = lodash.debounce(() => (self.isPaused = false), 500)
+    if (event === "start") {
+      this.onScrollStartListeners.push(callback)
+    }
+
+    if (event === "stop") {
+      this.onScrollStopListeners.push(callback)
+    }
+
+    if (event === "zero-velocity") {
+      this.onScrollVelocityIsZeroListeners.push(callback)
+    }
+
+    return this
+  }
+
+  off(event, callback) {
+    if (event === "start") {
+      this.onScrollStartListeners.splice(
+        this.onScrollStartListeners.indexOf(callback),
+        1,
+      )
+    }
+
+    if (event === "stop") {
+      this.onScrollStopListeners.splice(
+        this.onScrollStopListeners.indexOf(callback),
+        1,
+      )
+    }
+
+    if (event === "zero-velocity") {
+      this.onScrollVelocityIsZeroListeners.splice(
+        this.onScrollVelocityIsZeroListeners.indexOf(callback),
+        1,
+      )
+    }
+
+    return this
+  }
+
+  start() {
+    this.isRunning = true
+
+    const boundOnMouseDown = this.onMouseDown.bind(this)
+    const boundOnMouseUp = this.onMouseUp.bind(this)
+    const boundOnTouchStart = this.onTouchStart.bind(this)
+    const boundOnTouchEnd = this.onTouchEnd.bind(this)
+    const onWheelStart = () => (this.isPaused = true)
+
+    const onWheelEnd = lodash.debounce(
+      () => (this.isPaused = false),
+      this.delay,
+    )
 
     const onWheel = () => {
       onWheelStart()
@@ -51,22 +106,27 @@ class RubberBandScroller {
     window.addEventListener("touchend", boundOnTouchEnd)
     window.addEventListener("wheel", onWheel)
 
-    function loop() {
-      if (self.isRunning) {
+    const loop = () => {
+      if (this.isRunning) {
         window.requestAnimationFrame(loop)
-        if (self.isPaused) return
+        if (this.isPaused) return
 
-        const current = new Vector2(window.pageXOffset, window.pageYOffset)
-        const displacement = Vector2.subtract(current, self.target)
-        const force = Vector2.scale(displacement, -self.k)
-        const acceleration = Vector2.scale(force, 1 / self.mass)
-        self.velocity.add(acceleration).scale(self.damping)
-        const newPosition = Vector2.add(current, self.velocity)
+        const current = new Vector2(window.scrollX, window.scrollY)
+        const displacement = Vector2.subtract(current, this.target)
+        const force = Vector2.scale(displacement, -this.k)
+        const acceleration = Vector2.scale(force, 1 / this.mass)
+        this.velocity.add(acceleration).scale(this.damping)
+        const newPosition = Vector2.add(current, this.velocity)
 
         window.scrollTo({
           left: newPosition.x,
           top: newPosition.y,
         })
+
+        if (this.velocity.magnitude < this.sensitivity) {
+          this.velocity.scale(0)
+          this.onScrollVelocityIsZeroListeners.forEach(callback => callback())
+        }
       } else {
         window.removeEventListener("mousedown", boundOnMouseDown)
         window.removeEventListener("mouseup", boundOnMouseUp)
@@ -77,37 +137,34 @@ class RubberBandScroller {
     }
 
     loop()
-    return self
+    this.onScrollStartListeners.forEach(callback => callback())
+    return this
   }
 
   stop() {
-    const self = this
-    self.isRunning = false
-    return self
+    this.isRunning = false
+    this.onScrollStopListeners.forEach(callback => callback())
+    return this
   }
 
   onMouseDown(event) {
-    const self = this
-    if (event.button === 0) self.isPaused = true
-    return self
+    if (event.button === 0) this.isPaused = true
+    return this
   }
 
   onMouseUp(event) {
-    const self = this
-    if (event.button === 0) self.isPaused = false
-    return self
+    if (event.button === 0) this.isPaused = false
+    return this
   }
 
-  onTouchStart(event) {
-    const self = this
-    self.isPaused = true
-    return self
+  onTouchStart() {
+    this.isPaused = true
+    return this
   }
 
   onTouchEnd(event) {
-    const self = this
-    if (event.touches.length === 0) self.isPaused = false
-    return self
+    if (event.touches.length === 0) this.isPaused = false
+    return this
   }
 }
 
