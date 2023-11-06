@@ -81,6 +81,10 @@ class RubberBandScroller {
   }
 
   start() {
+    if (this.isRunning) {
+      return this
+    }
+
     this.isRunning = true
 
     const onStart = lodash.debounce(
