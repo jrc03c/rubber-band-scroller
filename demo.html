@@ -219,6 +219,8 @@
           // eslint-disable-next-line no-undef
           band = new RubberBandScroller({
             delay: 500,
+            k: 0.3,
+            mass: 1.5,
             target: {
               x:
                 rect.left +
@@ -232,6 +234,10 @@
                 window.pageYOffset,
             },
           })
+
+          band.on("start", () => console.log("Started!"))
+          band.on("stop", () => console.log("Stopped!"))
+          band.on("zero-velocity", () => console.log("Arrived!"))
 
           band.start()
         }, 10)
