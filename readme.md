@@ -45,3 +45,9 @@ band.on("arrive", () => console.log("Arrived!"))
 band.start()
 // band.stop()
 ```
+
+Note that the `.stop()` method will _immediately_ stop the scrolling of the page regardless of whether the scroller has arrived at its target or not.
+
+# Notes
+
+- This is only designed to scroll the entire page, not particular elements. Maybe I'll add that functionality at some point.
