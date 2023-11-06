@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify",
-    "watch": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify --watch"
+    "watch": "esbuild src/index.js --bundle --outfile=dist/rubber-band-scroller.js --minify --watch",
+    "pub": "npm version patch --force && npm publish --access=public"
   }
 }
