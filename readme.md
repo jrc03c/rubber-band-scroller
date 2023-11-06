@@ -39,7 +39,7 @@ const band = new RubberBandScroller({
 })
 
 band.on("start", () => console.log("Started!"))
-band.on("stop", () => console.log("Stopped!")
+band.on("stop", () => console.log("Stopped!"))
 band.on("arrive", () => console.log("Arrived!"))
 
 band.start()
