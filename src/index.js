@@ -11,7 +11,7 @@ class RubberBandScroller {
   maxSpeed = 1000
   onScrollStartListeners = []
   onScrollStopListeners = []
-  onScrollVelocityIsZeroListeners = []
+  onArriveListeners = []
   sensitivity = 1
   target = new Vector2(0, 0)
   velocity = new Vector2(0, 0)
@@ -51,8 +51,8 @@ class RubberBandScroller {
       this.onScrollStopListeners.push(callback)
     }
 
-    if (event === "zero-velocity") {
-      this.onScrollVelocityIsZeroListeners.push(callback)
+    if (event === "arrive") {
+      this.onArriveListeners.push(callback)
     }
 
     return this
@@ -73,11 +73,8 @@ class RubberBandScroller {
       )
     }
 
-    if (event === "zero-velocity") {
-      this.onScrollVelocityIsZeroListeners.splice(
-        this.onScrollVelocityIsZeroListeners.indexOf(callback),
-        1,
-      )
+    if (event === "arrive") {
+      this.onArriveListeners.splice(this.onArriveListeners.indexOf(callback), 1)
     }
 
     return this
@@ -104,7 +101,7 @@ class RubberBandScroller {
 
     const onArrive = lodash.debounce(
       () => {
-        this.onScrollVelocityIsZeroListeners.forEach(callback => callback())
+        this.onArriveListeners.forEach(callback => callback())
       },
       1000,
       { leading: true },

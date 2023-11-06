@@ -1,12 +1,46 @@
+# Intro
+
+This little tool adds rubber-band-like scrolling to a web page.
+
+# Installation
+
+```bash
+npm install --save @jrc03c/rubber-band-scroller
+```
+
+# Usage
+
+Add the script to your HTML:
+
+<!-- prettier-ignore -->
+```html
+<script
+  src="node_modules/@jrc03c/rubber-band-scroller/dist/rubber-band-scroller.js">
+</script>
+```
+
+Or import for use with bundlers:
+
 ```js
 const RubberBandScroller = require("rubber-band-scroller")
+```
 
+Then:
+
+```js
 const band = new RubberBandScroller({
-  target: { x: 0, y: 0 },
-  k: 1,
-  mass: 1,
   damping: 0.6,
+  delay: 0,
+  k: 0.3,
+  mass: 1.5,
+  maxSpeed: 1000,
+  sensitivity: 1,
+  target: { x: 0, y: 0 },
 })
+
+band.on("start", () => console.log("Started!"))
+band.on("stop", () => console.log("Stopped!")
+band.on("arrive", () => console.log("Arrived!"))
 
 band.start()
 // band.stop()
