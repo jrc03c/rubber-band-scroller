@@ -118,7 +118,7 @@ class RubberBandScroller {
 
     const onMouseUp = event => {
       if (event.button === 0) {
-        this.isPaused = false
+        onWheelEnd()
       }
     }
 
@@ -128,7 +128,7 @@ class RubberBandScroller {
 
     const onTouchEnd = event => {
       if (event.touches.length === 0) {
-        this.isPaused = false
+        onWheelEnd()
       }
     }
 
@@ -154,9 +154,8 @@ class RubberBandScroller {
     let then
     let hasArrived = false
 
-    const loop = () => {
+    const interval = setInterval(() => {
       if (this.isRunning) {
-        window.requestAnimationFrame(loop)
         if (this.isPaused) return
 
         const now = new Date()
@@ -184,6 +183,7 @@ class RubberBandScroller {
           if (!hasArrived) {
             hasArrived = true
             this.velocity.scale(0)
+            this.isPaused = true
             window.scrollTo({ left: this.target.x, top: this.target.y })
             onArrive()
           }
@@ -191,6 +191,7 @@ class RubberBandScroller {
           hasArrived = false
         }
       } else {
+        clearInterval(interval)
         window.removeEventListener("mousedown", onMouseDown)
         window.removeEventListener("mouseup", onMouseUp)
         window.removeEventListener("touchstart", onTouchStart)
@@ -198,9 +199,8 @@ class RubberBandScroller {
         window.removeEventListener("wheel", onWheel)
         onStop()
       }
-    }
+    }, 1000 / 60)
 
-    loop()
     onStart()
     return this
   }
